@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - eCFR Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-gavel me-2"></i>eCFR Analyzer
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Dashboard</a>
+                <a class="nav-link" href="/agencies">Agencies</a>
+                <a class="nav-link active" href="/about">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="display-5 mb-4">About eCFR Analyzer</h1>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Project Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            The eCFR Analyzer is a comprehensive web application designed to analyze Federal Regulations
+                            from the Electronic Code of Federal Regulations (eCFR) API. This tool provides digestible
+                            and actionable insights to inform potential deregulation efforts across the U.S. government.
+                        </p>
+                        <p>
+                            With over 200,000 pages of federal regulations across approximately 150 main agencies,
+                            this application helps identify patterns, complexity metrics, and areas where regulatory
+                            streamlining could provide the most benefit.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Key Features</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-download text-primary"></i> Incremental Data Fetching</h6>
+                                <p class="small text-muted">
+                                    Automatically downloads eCFR data with smart incremental updates to minimize
+                                    API calls and maintain current information.
+                                </p>
+
+                                <h6><i class="fas fa-database text-success"></i> Local Data Storage</h6>
+                                <p class="small text-muted">
+                                    Stores regulation data locally in JSON format for fast access and offline analysis.
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6><i class="fas fa-chart-line text-warning"></i> Advanced Analytics</h6>
+                                <p class="small text-muted">
+                                    Provides comprehensive metrics including word counts, regulation counts,
+                                    and our custom Regulatory Complexity Index.
+                                </p>
+
+                                <h6><i class="fas fa-shield-alt text-info"></i> Data Integrity</h6>
+                                <p class="small text-muted">
+                                    Generates checksums for each agency and overall dataset to track changes over time.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Custom Metric: Regulatory Complexity Index</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            Our signature metric, the <strong>Regulatory Complexity Index (RCI)</strong>, is designed
+                            to identify agencies with the most complex regulatory frameworks that could benefit from
+                            deregulation efforts.
+                        </p>
+
+                        <h6>RCI Formula Components:</h6>
+                        <ul>
+                            <li><strong>Verbosity Factor (40%)</strong>: Average words per regulation normalized to a 1000-word baseline</li>
+                            <li><strong>Scope Factor (30%)</strong>: Number of unique CFR titles covered by the agency</li>
+                            <li><strong>Structure Factor (30%)</strong>: Complexity based on unique parts, chapters, and sections</li>
+                        </ul>
+
+                        <div class="alert alert-info">
+                            <strong>Interpretation:</strong> Higher RCI values indicate agencies with more verbose,
+                            wide-reaching, and structurally complex regulations. These agencies represent prime
+                            candidates for regulatory streamlining initiatives.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-code me-2"></i>Technical Implementation</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Backend Technologies</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="fab fa-java text-danger"></i> Java 17 + Spring Boot 3.x</li>
+                                    <li><i class="fas fa-leaf text-success"></i> Spring Web & Thymeleaf</li>
+                                    <li><i class="fas fa-exchange-alt text-info"></i> REST API with JSON</li>
+                                    <li><i class="fas fa-clock text-warning"></i> Scheduled Data Synchronization</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Frontend Technologies</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="fab fa-bootstrap text-primary"></i> Bootstrap 5</li>
+                                    <li><i class="fas fa-icons text-info"></i> Font Awesome Icons</li>
+                                    <li><i class="fas fa-mobile-alt text-success"></i> Responsive Design</li>
+                                    <li><i class="fas fa-chart-bar text-warning"></i> Interactive Data Visualization</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-api me-2"></i>API Endpoints</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Endpoint</th>
+                                        <th>Method</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>/api/report</code></td>
+                                        <td><span class="badge bg-success">GET</span></td>
+                                        <td>Complete analysis report</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>/api/agencies</code></td>
+                                        <td><span class="badge bg-success">GET</span></td>
+                                        <td>Agency metrics with sorting</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>/api/agencies/top</code></td>
+                                        <td><span class="badge bg-success">GET</span></td>
+                                        <td>Top agencies by all metrics</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>/api/sync/force</code></td>
+                                        <td><span class="badge bg-warning">POST</span></td>
+                                        <td>Force data synchronization</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>/api/sync/status</code></td>
+                                        <td><span class="badge bg-success">GET</span></td>
+                                        <td>Current sync status</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-users me-2"></i>USDS Take-Home Assessment</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            This application was developed as part of the United States Digital Service (USDS)
+                            Engineering Take-Home Assessment. The goal was to create a tool for analyzing federal
+                            regulations to support potential deregulation efforts.
+                        </p>
+
+                        <h6>Assessment Requirements Met:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success"></i> Download current eCFR data</li>
+                                    <li><i class="fas fa-check text-success"></i> Store data server-side</li>
+                                    <li><i class="fas fa-check text-success"></i> Create data retrieval APIs</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success"></i> Provide analytical UI</li>
+                                    <li><i class="fas fa-check text-success"></i> Word count per agency</li>
+                                    <li><i class="fas fa-check text-success"></i> Agency checksums</li>
+                                    <li><i class="fas fa-check text-success"></i> Custom complexity metric</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

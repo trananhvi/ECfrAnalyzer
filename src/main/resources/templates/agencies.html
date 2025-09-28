@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Federal Agencies - eCFR Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .agency-card {
+            transition: transform 0.2s;
+        }
+        .agency-card:hover {
+            transform: translateY(-5px);
+        }
+        .complexity-meter {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .complexity-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-gavel me-2"></i>eCFR Analyzer
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Dashboard</a>
+                <a class="nav-link active" href="/agencies">Agencies</a>
+                <a class="nav-link" href="/about">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="display-5">Federal Agencies Analysis</h1>
+                <p class="lead">Detailed metrics for each federal agency's regulatory footprint</p>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="get" action="/agencies">
+                            <div class="row align-items-end">
+                                <div class="col-md-4">
+                                    <label for="sortBy" class="form-label">Sort By</label>
+                                    <select name="sortBy" id="sortBy" class="form-select" th:value="${sortBy}">
+                                        <option value="regulations" th:selected="${sortBy == 'regulations'}">Number of Regulations</option>
+                                        <option value="words" th:selected="${sortBy == 'words'}">Total Word Count</option>
+                                        <option value="complexity" th:selected="${sortBy == 'complexity'}">Regulatory Complexity Index</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="limit" class="form-label">Show Top</label>
+                                    <select name="limit" id="limit" class="form-select" th:value="${limit}">
+                                        <option value="10" th:selected="${limit == 10}">10 Agencies</option>
+                                        <option value="20" th:selected="${limit == 20}">20 Agencies</option>
+                                        <option value="50" th:selected="${limit == 50}">50 Agencies</option>
+                                        <option value="100" th:selected="${limit == 100}">100 Agencies</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search me-2"></i>Update View
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h5><i class="fas fa-info-circle me-2"></i>Showing Results</h5>
+                        <p class="mb-0">Top <strong th:text="${limit}">20</strong> agencies by <strong th:text="${sortBy}">regulations</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agencies Grid -->
+        <div class="row">
+            <div class="col-lg-6 mb-4" th:each="agency, iterStat : ${agencies}">
+                <div class="card agency-card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0" th:text="${agency.agencyName}">Agency Name</h6>
+                        <span class="badge bg-primary" th:text="'#' + ${iterStat.count}">1</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="text-center mb-3">
+                                    <i class="fas fa-file-alt text-primary fa-2x"></i>
+                                    <h4 class="mt-2" th:text="${#numbers.formatInteger(agency.totalRegulations, 0, 'COMMA')}">0</h4>
+                                    <small class="text-muted">Regulations</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center mb-3">
+                                    <i class="fas fa-font text-success fa-2x"></i>
+                                    <h4 class="mt-2" th:text="${#numbers.formatInteger(agency.totalWordCount, 0, 'COMMA')}">0</h4>
+                                    <small class="text-muted">Words</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small">Regulatory Complexity Index</span>
+                                <strong th:text="${#numbers.formatDecimal(agency.regulatoryComplexityIndex, 1, 2)}">0.00</strong>
+                            </div>
+                            <div class="complexity-meter">
+                                <div class="complexity-fill" th:style="'width: ' + ${T(java.lang.Math).min(agency.regulatoryComplexityIndex * 10, 100)} + '%'"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted">Avg Words/Reg:</small>
+                                <br>
+                                <strong th:text="${#numbers.formatInteger(agency.averageWordsPerRegulation, 0, 'COMMA')}">0</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Unique Titles:</small>
+                                <br>
+                                <strong th:text="${agency.uniqueTitles}">0</strong>
+                            </div>
+                        </div>
+
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                Checksum: <code th:text="${agency.checksum != null ? agency.checksum.substring(0, 8) + '...' : 'N/A'}">N/A</code>
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <small>
+                            <i class="fas fa-clock me-1"></i>
+                            Updated: <span th:text="${#temporals.format(agency.lastUpdated, 'MMM dd, HH:mm')}">Now</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Results -->
+        <div class="row" th:if="${#lists.isEmpty(agencies)}">
+            <div class="col-12">
+                <div class="alert alert-warning text-center">
+                    <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+                    <h4>No Agencies Found</h4>
+                    <p>No agency data is available. Please check if data synchronization has completed.</p>
+                    <a href="/" class="btn btn-primary">Return to Dashboard</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explanation Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Understanding the Metrics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Regulatory Complexity Index (RCI)</h6>
+                                <p class="small text-muted">
+                                    A custom metric that combines three factors:
+                                </p>
+                                <ul class="small text-muted">
+                                    <li><strong>Verbosity:</strong> Average words per regulation (40% weight)</li>
+                                    <li><strong>Scope:</strong> Number of unique CFR titles covered (30% weight)</li>
+                                    <li><strong>Structure:</strong> Complexity based on parts, chapters, and sections (30% weight)</li>
+                                </ul>
+                                <p class="small text-muted">
+                                    Higher RCI values suggest agencies with more complex regulatory frameworks that may benefit from streamlining efforts.
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Data Integrity</h6>
+                                <p class="small text-muted">
+                                    Each agency has a unique checksum that changes when regulations are updated, helping track changes over time.
+                                </p>
+
+                                <h6>Deregulation Insights</h6>
+                                <p class="small text-muted">
+                                    Agencies with high word counts, many regulations, or high complexity scores represent potential targets for deregulation initiatives to reduce administrative burden.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
