@@ -105,10 +105,6 @@ public class ECFRTitle {
     public String getStructureData() { return structureData; }
     public void setStructureData(String structureData) { this.structureData = structureData; }
 
-    // Legacy properties for backward compatibility - returning null since these aren't in the new API
-    public String getVolume() { return null; }
-    public void setVolume(String volume) { /* Not used in new API */ }
-
     public String getDate() { return latestIssueDate; }
     public void setDate(String date) { this.latestIssueDate = date; }
 

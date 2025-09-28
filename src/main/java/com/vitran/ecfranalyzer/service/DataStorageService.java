@@ -22,7 +22,7 @@ import java.util.Map;
 public class DataStorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(DataStorageService.class);
-    private static final String DATA_DIR = "ecfr-data";
+    private static final String DATA_DIR = "data/processed"; // Changed from "ecfr-data" to align with new structure
     private static final String TITLES_FILE = "ecfr-titles.json";
     private static final String METADATA_FILE = "metadata.json";
 

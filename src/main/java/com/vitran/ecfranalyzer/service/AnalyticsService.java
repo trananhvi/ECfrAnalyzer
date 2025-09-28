@@ -168,7 +168,10 @@ public class AnalyticsService {
 
             String content = titles.stream()
                     .sorted(Comparator.comparing(ECFRTitle::getTitleNumber, Comparator.nullsLast(String::compareTo)))
-                    .map(title -> title.getTitleNumber() + title.getTitleName() + title.getWordCount())
+                    .map(title -> title.getTitleNumber() +
+                                  (title.getTitleName() != null ? title.getTitleName() : "") +
+                                  (title.getContent() != null ? title.getContent() : "") +
+                                  (title.getChecksum() != null ? title.getChecksum() : ""))
                     .collect(Collectors.joining());
 
             byte[] hash = md.digest(content.getBytes());

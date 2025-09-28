@@ -33,26 +33,79 @@ public class DataSyncService {
     @Autowired
     private AnalyticsService analyticsService;
 
+    @Autowired
+    private ProcessedDataService processedDataService;
+
     private volatile boolean isSyncing = false;
     private LocalDateTime lastSyncTime;
 
     @EventListener(ApplicationReadyEvent.class)
     public void initializeData() {
-        logger.info("Application started - checking for existing data");
+        logger.info("=== Starting Complete eCFR Data Processing Pipeline ===");
 
-        if (!dataStorageService.hasExistingData()) {
-            logger.info("No existing data found - starting initial data fetch");
-            performInitialSync();
-        } else {
-            logger.info("Existing data found - checking if update is needed");
-            LocalDateTime lastUpdate = dataStorageService.getLastUpdateTime();
-            if (lastUpdate == null || ChronoUnit.HOURS.between(lastUpdate, LocalDateTime.now()) > 24) {
-                logger.info("Data is outdated - starting incremental sync");
-                performIncrementalSync();
+        if (isSyncing) {
+            logger.warn("Sync already in progress - skipping initialization");
+            return;
+        }
+
+        try {
+            isSyncing = true;
+
+            // PHASE 1: RAW DATA ACQUISITION
+            logger.info("Phase 1: Raw Data Acquisition");
+            performDataAcquisition();
+
+            // PHASE 2: ANALYTICS PROCESSING
+            logger.info("Phase 2: Analytics Processing");
+            processedDataService.generateProcessedAnalytics();
+
+            lastSyncTime = LocalDateTime.now();
+            logger.info("=== Complete Pipeline Finished Successfully ===");
+            logger.info("Data stored in:");
+            logger.info("  - Raw data: data/raw/");
+            logger.info("  - Analytics: data/processed/");
+            logger.info("  - State: data/state/");
+
+        } catch (Exception e) {
+            logger.error("Error in complete data processing pipeline", e);
+        } finally {
+            isSyncing = false;
+        }
+    }
+
+    /**
+     * Perform data acquisition without async complexity
+     */
+    private void performDataAcquisition() {
+        try {
+            logger.info("Starting data acquisition");
+
+            // Check if we have existing data
+            boolean hasExistingData = dataStorageService.hasExistingData();
+
+            List<ECFRTitle> updatedTitles;
+            if (hasExistingData) {
+                // Get last update time and fetch only updated titles
+                LocalDateTime lastUpdate = dataStorageService.getLastUpdateTime();
+                logger.info("Performing incremental sync since: {}", lastUpdate);
+                updatedTitles = ecfrApiService.fetchUpdatedTitles(lastUpdate);
             } else {
-                logger.info("Data is up to date");
-                lastSyncTime = lastUpdate;
+                // First time - fetch all titles
+                logger.info("No existing data found. Performing initial full sync");
+                updatedTitles = ecfrApiService.fetchAllTitles();
             }
+
+            if (!updatedTitles.isEmpty()) {
+                // Save the updated/new titles
+                dataStorageService.saveTitles(updatedTitles);
+                logger.info("Successfully acquired {} titles", updatedTitles.size());
+            } else {
+                logger.info("No new or updated titles found");
+            }
+
+        } catch (Exception e) {
+            logger.error("Error during data acquisition", e);
+            throw e;
         }
     }
 
@@ -94,19 +147,29 @@ public class DataSyncService {
 
         try {
             isSyncing = true;
-            LocalDateTime since = dataStorageService.getLastUpdateTime();
-            logger.info("Starting incremental sync since: {}", since);
+            logger.info("Starting incremental data synchronization");
 
-            List<ECFRTitle> updatedTitles = ecfrApiService.fetchUpdatedTitles(since);
+            // Check if we have existing data
+            boolean hasExistingData = dataStorageService.hasExistingData();
+
+            List<ECFRTitle> updatedTitles;
+            if (hasExistingData) {
+                // Get last update time and fetch only updated titles
+                LocalDateTime lastUpdate = dataStorageService.getLastUpdateTime();
+                logger.info("Performing incremental sync since: {}", lastUpdate);
+                updatedTitles = ecfrApiService.fetchUpdatedTitles(lastUpdate);
+            } else {
+                // First time - fetch all titles
+                logger.info("No existing data found. Performing initial full sync");
+                updatedTitles = ecfrApiService.fetchAllTitles();
+            }
 
             if (!updatedTitles.isEmpty()) {
-                // For simplicity, we're replacing all data
-                // In production, you'd merge the updates
+                // Save the updated/new titles
                 dataStorageService.saveTitles(updatedTitles);
-                lastSyncTime = LocalDateTime.now();
-                logger.info("Incremental sync completed - processed {} titles", updatedTitles.size());
+                logger.info("Successfully synced {} titles", updatedTitles.size());
             } else {
-                logger.info("No new updates found during incremental sync");
+                logger.info("No new or updated titles found");
             }
 
         } catch (Exception e) {

@@ -126,7 +126,7 @@
                                 <strong th:text="${#numbers.formatDecimal(agency.regulatoryComplexityIndex, 1, 2)}">0.00</strong>
                             </div>
                             <div class="complexity-meter">
-                                <div class="complexity-fill" th:style="'width: ' + ${T(java.lang.Math).min(agency.regulatoryComplexityIndex * 10, 100)} + '%'"></div>
+                                <div class="complexity-fill" th:style="'width: ' + ${T(java.lang.Math).min(T(java.lang.Double).valueOf(agency.regulatoryComplexityIndex * 10), 100.0)} + '%'"></div>
                             </div>
                         </div>
 
